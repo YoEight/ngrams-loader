@@ -1,0 +1,35 @@
+name:                ngrams-loader
+version:             0.1.0.0
+-- synopsis:
+-- description:
+license:             MIT
+license-file:        LICENSE
+author:              Yorick Laupa
+maintainer:          yo.eight@gmail.com
+
+category:            Data
+build-type:          Simple
+extra-source-files:  README.md
+cabal-version:       >=1.10
+
+library
+  hs-source-dirs:       lib
+  build-depends:        base          >=4.6    && <4.7
+                      , attoparsec    >=0.11.1 && <0.11.2
+                      , machines      >= 0.2.5 && <0.3
+                      , resourcet     >=0.4.3  && <0.5
+                      , sqlite-simple >= 0.4.5 && <0.5
+                      , text          >=0.11   && <1.2
+
+  exposed-modules: Data.Ngrams
+
+  ghc-options: -Wall -Werror -O2
+  default-language:    Haskell2010
+
+executable ngrams-loader
+  main-is: Main.hs
+  build-depends:       base
+                     , ngrams-loader
+
+  ghc-options: -Wall -Werror -O2
+  default-language:    Haskell2010

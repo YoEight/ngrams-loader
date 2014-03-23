@@ -1,0 +1,12 @@
+-----------------------------------------------------------------------------
+-- |
+-- Module : Data.Ngrams
+-- Copyright : (C) 2014 Yorick Laupa
+-- License : (see the file LICENSE)
+--
+-- Maintainer : Yorick Laupa <yo.eight@gmail.com>
+-- Stability : provisional
+-- Portability : non-portable
+--
+----------------------------------------------------------------------------
+module Data.Ngrams where

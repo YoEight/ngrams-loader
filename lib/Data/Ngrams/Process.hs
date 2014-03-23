@@ -14,6 +14,7 @@
 module Data.Ngrams.Process where
 
 ----------------------------------------------------------------------------
+import Control.Applicative ((<|>))
 import Control.Exception
 import Data.Typeable
 import System.IO (IOMode(..), hClose, hIsEOF, openFile)
@@ -26,6 +27,9 @@ import           Control.Monad.Trans.Resource
 import           Data.Machine
 import qualified Data.Text                    as T
 import qualified Data.Text.IO                 as T
+
+----------------------------------------------------------------------------
+import Data.Ngrams.Database.Sqlite
 
 ----------------------------------------------------------------------------
 data ParseException = ParseException !String deriving (Show, Typeable)
@@ -65,3 +69,25 @@ parseLine p = repeatedly $ do
     case parseOnly p line of
         Left e  -> lift $ monadThrow $ ParseException e
         Right a -> yield a
+
+----------------------------------------------------------------------------
+-- | Saves each entry in a SQLite database with submitted `Command`
+saveDB :: FilePath -> Command a -> ProcessT (ResourceT IO) a ()
+saveDB path c = construct $ do
+    (ckey, con) <- lift $ allocate (open path) close
+    (skey, st)  <- lift $ allocate (openStatement con q) closeStatement
+    loop ckey skey con st
+  where
+    q       = cmdInsert c
+    binding = cmdBind c
+
+    loop ckey skey con st =
+        let closing = do
+                lift $ liftIO $ do
+                    release skey
+                    release ckey
+                stop in
+
+        do a <- await <|> closing
+           lift $ liftIO $ binding a st
+           loop ckey skey con st

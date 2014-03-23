@@ -22,6 +22,7 @@ library
                       , text          >=0.11   && <1.2
 
   exposed-modules: Data.Ngrams
+                   Data.Ngrams.Database.Sqlite
   other-modules:   Data.Ngrams.Parser
                    Data.Ngrams.Type
 

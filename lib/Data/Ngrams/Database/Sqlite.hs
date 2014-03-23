@@ -12,6 +12,7 @@
 ----------------------------------------------------------------------------
 module Data.Ngrams.Database.Sqlite
     ( Command
+    , cmdBind
     , cmdCreateTable
     , cmdInsert
     , bigramCommand
@@ -30,24 +31,25 @@ import Data.Ngrams.Type
 data Command a =
     Command
     { cmdCreateTable :: Query
-    , cmdInsert      :: a -> Connection -> IO ()
+    , cmdInsert      :: Query
+    , cmdBind        :: a -> Statement -> IO ()
     }
 
 ----------------------------------------------------------------------------
 bigramCommand :: Command Bigram
-bigramCommand = Command bigramCreateTable bigramInsertIO
+bigramCommand = Command bigramCreateTable bigramInsert bigramBind
 
 ----------------------------------------------------------------------------
 trigramCommand :: Command Trigram
-trigramCommand = Command trigramCreateTable trigramInsertIO
+trigramCommand = Command trigramCreateTable trigramInsert trigramBind
 
 ----------------------------------------------------------------------------
 quadgramCommand :: Command Quadgram
-quadgramCommand = Command quadgramCreateTable quadgramInsertIO
+quadgramCommand = Command quadgramCreateTable quadgramInsert quadgramBind
 
 ----------------------------------------------------------------------------
 pentagramCommand :: Command Pentagram
-pentagramCommand = Command pentagramCreateTable pentagramInsertIO
+pentagramCommand = Command pentagramCreateTable pentagramInsert pentagramBind
 
 ----------------------------------------------------------------------------
 bigramCreateTable :: Query
@@ -114,21 +116,21 @@ pentagramInsert =
     \values (?,?,?,?,?)"
 
 ----------------------------------------------------------------------------
-bigramInsertIO :: Bigram -> Connection -> IO ()
-bigramInsertIO (Bigram freq w1 w2) con =
-    execute con bigramInsert (freq, w1, w2)
+bigramBind:: Bigram -> Statement -> IO ()
+bigramBind (Bigram freq w1 w2) st =
+    bind st (freq, w1, w2)
 
 ----------------------------------------------------------------------------
-trigramInsertIO :: Trigram -> Connection -> IO ()
-trigramInsertIO (Trigram freq w1 w2 w3) con =
-    execute con trigramInsert (freq, w1, w2, w3)
+trigramBind :: Trigram -> Statement -> IO ()
+trigramBind (Trigram freq w1 w2 w3) st =
+    bind st (freq, w1, w2, w3)
 
 ----------------------------------------------------------------------------
-quadgramInsertIO :: Quadgram -> Connection -> IO ()
-quadgramInsertIO (Quadgram freq w1 w2 w3 w4) con =
-    execute con quadgramInsert (freq, w1, w2, w3, w4)
+quadgramBind :: Quadgram -> Statement -> IO ()
+quadgramBind (Quadgram freq w1 w2 w3 w4) st =
+    bind st (freq, w1, w2, w3, w4)
 
 ----------------------------------------------------------------------------
-pentagramInsertIO :: Pentagram -> Connection -> IO ()
-pentagramInsertIO (Pentagram freq w1 w2 w3 w4 w5) con =
-    execute con pentagramInsert (freq, w1, w2, w3, w4, w5)
+pentagramBind :: Pentagram -> Statement -> IO ()
+pentagramBind (Pentagram freq w1 w2 w3 w4 w5) st =
+    bind st (freq, w1, w2, w3, w4, w5)

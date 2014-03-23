@@ -22,6 +22,8 @@ library
                       , text          >=0.11   && <1.2
 
   exposed-modules: Data.Ngrams
+  other-modules:   Data.Ngrams.Parser
+                   Data.Ngrams.Type
 
   ghc-options: -Wall -Werror -O2
   default-language:    Haskell2010

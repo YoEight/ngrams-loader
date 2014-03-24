@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE OverloadedStrings  #-}
 {-# LANGUAGE RankNTypes         #-}
 -----------------------------------------------------------------------------
 -- |
@@ -15,6 +16,7 @@ module Data.Ngrams.Process where
 
 ----------------------------------------------------------------------------
 import Control.Applicative ((<|>))
+import Control.Monad (when)
 import Control.Exception
 import Data.Typeable
 import System.IO (IOMode(..), hClose, hIsEOF, openFile)
@@ -72,22 +74,23 @@ parseLine p = repeatedly $ do
 
 ----------------------------------------------------------------------------
 -- | Saves each entry in a SQLite database with submitted `Command`
-saveDB :: FilePath -> Command a -> ProcessT (ResourceT IO) a ()
-saveDB path c = construct $ do
+saveDB :: Bool -> FilePath -> Command a -> ProcessT (ResourceT IO) a ()
+saveDB create path c = construct $ do
     (ckey, con) <- lift $ allocate (open path) close
-    (skey, st)  <- lift $ allocate (openStatement con q) closeStatement
-    loop ckey skey con st
+    when create $ liftIO $ execute_ con createTable
+    lift $ liftIO $ execute_ con "begin"
+    loop ckey con
   where
-    q       = cmdInsert c
-    binding = cmdBind c
+    exec        = cmdExec c
+    createTable = cmdCreateTable c
 
-    loop ckey skey con st =
+    loop ckey con =
         let closing = do
                 lift $ liftIO $ do
-                    release skey
+                    execute_ con "end"
                     release ckey
                 stop in
 
         do a <- await <|> closing
-           lift $ liftIO $ binding a st
-           loop ckey skey con st
+           lift $ liftIO $ exec a con
+           loop ckey con

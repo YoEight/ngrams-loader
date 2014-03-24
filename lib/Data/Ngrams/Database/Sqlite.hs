@@ -12,9 +12,8 @@
 ----------------------------------------------------------------------------
 module Data.Ngrams.Database.Sqlite
     ( Command
-    , cmdBind
+    , cmdExec
     , cmdCreateTable
-    , cmdInsert
     , bigramCommand
     , trigramCommand
     , quadgramCommand
@@ -31,25 +30,24 @@ import Data.Ngrams.Type
 data Command a =
     Command
     { cmdCreateTable :: Query
-    , cmdInsert      :: Query
-    , cmdBind        :: a -> Statement -> IO ()
+    , cmdExec        :: a -> Connection -> IO ()
     }
 
 ----------------------------------------------------------------------------
 bigramCommand :: Command Bigram
-bigramCommand = Command bigramCreateTable bigramInsert bigramBind
+bigramCommand = Command bigramCreateTable bigramEx
 
 ----------------------------------------------------------------------------
 trigramCommand :: Command Trigram
-trigramCommand = Command trigramCreateTable trigramInsert trigramBind
+trigramCommand = Command trigramCreateTable trigramEx
 
 ----------------------------------------------------------------------------
 quadgramCommand :: Command Quadgram
-quadgramCommand = Command quadgramCreateTable quadgramInsert quadgramBind
+quadgramCommand = Command quadgramCreateTable quadgramEx
 
 ----------------------------------------------------------------------------
 pentagramCommand :: Command Pentagram
-pentagramCommand = Command pentagramCreateTable pentagramInsert pentagramBind
+pentagramCommand = Command pentagramCreateTable pentagramEx
 
 ----------------------------------------------------------------------------
 bigramCreateTable :: Query
@@ -96,41 +94,41 @@ pentagramCreateTable =
 ----------------------------------------------------------------------------
 bigramInsert :: Query
 bigramInsert =
-    "insert into bigrams (frequence, word1, word2) values (?,?,?)"
+    "insert into bigrams (frequence, word1, word2) values (?,?,?);"
 
 ----------------------------------------------------------------------------
 trigramInsert :: Query
 trigramInsert =
-    "insert into trigrams (frequence, word1, word2, word3) values (?,?,?,?)"
+    "insert into trigrams (frequence, word1, word2, word3) values (?,?,?,?);"
 
 ----------------------------------------------------------------------------
 quadgramInsert :: Query
 quadgramInsert =
     "insert into quadgrams (frequence, word1, word2, word3, word4) values \
-    \(?,?,?,?,?)"
+    \(?,?,?,?,?);"
 
 ----------------------------------------------------------------------------
 pentagramInsert :: Query
 pentagramInsert =
     "insert into pentagrams (frequence, word1, word2, word3, word4, word5) \
-    \values (?,?,?,?,?)"
+    \values (?,?,?,?,?);"
 
 ----------------------------------------------------------------------------
-bigramBind:: Bigram -> Statement -> IO ()
-bigramBind (Bigram freq w1 w2) st =
-    bind st (freq, w1, w2)
+bigramEx:: Bigram -> Connection -> IO ()
+bigramEx (Bigram freq w1 w2) con =
+    execute con bigramInsert (freq, w1, w2)
 
 ----------------------------------------------------------------------------
-trigramBind :: Trigram -> Statement -> IO ()
-trigramBind (Trigram freq w1 w2 w3) st =
-    bind st (freq, w1, w2, w3)
+trigramEx :: Trigram -> Connection -> IO ()
+trigramEx (Trigram freq w1 w2 w3) con =
+    execute con trigramInsert (freq, w1, w2, w3)
 
 ----------------------------------------------------------------------------
-quadgramBind :: Quadgram -> Statement -> IO ()
-quadgramBind (Quadgram freq w1 w2 w3 w4) st =
-    bind st (freq, w1, w2, w3, w4)
+quadgramEx :: Quadgram -> Connection -> IO ()
+quadgramEx (Quadgram freq w1 w2 w3 w4) con =
+    execute con quadgramInsert (freq, w1, w2, w3, w4)
 
 ----------------------------------------------------------------------------
-pentagramBind :: Pentagram -> Statement -> IO ()
-pentagramBind (Pentagram freq w1 w2 w3 w4 w5) st =
-    bind st (freq, w1, w2, w3, w4, w5)
+pentagramEx :: Pentagram -> Connection -> IO ()
+pentagramEx (Pentagram freq w1 w2 w3 w4 w5) con =
+    execute con pentagramInsert (freq, w1, w2, w3, w4, w5)

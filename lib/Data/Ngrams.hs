@@ -9,4 +9,13 @@
 -- Portability : non-portable
 --
 ----------------------------------------------------------------------------
-module Data.Ngrams where
+module Data.Ngrams
+    ( module Data.Ngrams.Database.Sqlite
+    , module Data.Ngrams.Parser
+    , module Data.Ngrams.Process
+    ) where
+
+----------------------------------------------------------------------------
+import Data.Ngrams.Database.Sqlite
+import Data.Ngrams.Parser
+import Data.Ngrams.Process

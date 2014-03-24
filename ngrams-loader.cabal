@@ -35,6 +35,7 @@ executable ngrams-loader
   main-is: Main.hs
   build-depends:       base
                      , ngrams-loader
+                     , parseargs     ==0.1.5.*
 
   ghc-options: -Wall -Werror -O2
   default-language:    Haskell2010

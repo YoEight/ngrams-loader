@@ -1,5 +1,5 @@
 name:                ngrams-loader
-version:             0.1.0.0
+version:             0.1.0.1
 synopsis:            Ngrams loader based on http://www.ngrams.info format
 description:         Ngrams loader based on http://www.ngrams.info format
 license:             MIT
@@ -24,15 +24,15 @@ library
   hs-source-dirs:       lib
   build-depends:        base          >=4.6    && <4.7
                       , attoparsec    >=0.11.1 && <0.11.2
-                      , machines      >= 0.2.5 && <0.3
+                      , machines      >=0.2.5  && <0.3
                       , mtl
                       , resourcet     >=0.4.3  && <0.5
-                      , sqlite-simple >= 0.4.5 && <0.5
+                      , sqlite-simple >=0.4.5  && <0.5
                       , text          >=0.11   && <1.2
 
   exposed-modules: Data.Ngrams
-                   Data.Ngrams.Database.Sqlite
-  other-modules:   Data.Ngrams.Process
+  other-modules:   Data.Ngrams.Database.Sqlite
+                   Data.Ngrams.Process
                    Data.Ngrams.Parser
                    Data.Ngrams.Type
 

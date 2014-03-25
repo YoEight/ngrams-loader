@@ -3,6 +3,8 @@ ngrams-loader
 
 Ngrams loader based on http://www.ngrams.info format
 
+[![Build Status](https://travis-ci.org/YoEight/ngrams-loader.png?branch=master)](https://travis-ci.org/YoEight/ngrams-loader)
+
 Installation
 ------------
 Supposed you have at least `cabal 1.18` installed
